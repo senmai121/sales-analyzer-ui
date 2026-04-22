@@ -1,51 +1,37 @@
 'use client'
 
-import { useState } from 'react'
-import { getInsights } from '@/lib/api'
 import { Insights } from '@/lib/types'
+import AuthGuard from '@/components/AuthGuard'
+import { useSSE } from '@/lib/useSSE'
+import { SSELoader } from '@/components/SSELoader'
 
 function InsightSection({
-  title,
-  icon,
-  items,
-  color,
+  title, icon, items, color,
 }: {
   title: string
   icon: string
   items: string[]
-  color: string
+  color: 'mint' | 'coral' | 'azure' | 'gold'
 }) {
-  const bgMap: Record<string, string> = {
-    emerald: 'bg-emerald-50 border-emerald-200',
-    red: 'bg-red-50 border-red-200',
-    blue: 'bg-blue-50 border-blue-200',
-    amber: 'bg-amber-50 border-amber-200',
-  }
-  const titleMap: Record<string, string> = {
-    emerald: 'text-emerald-800',
-    red: 'text-red-800',
-    blue: 'text-blue-800',
-    amber: 'text-amber-800',
-  }
-  const dotMap: Record<string, string> = {
-    emerald: 'bg-emerald-400',
-    red: 'bg-red-400',
-    blue: 'bg-blue-400',
-    amber: 'bg-amber-400',
-  }
-
   if (!items || items.length === 0) return null
 
+  const styles = {
+    mint:  { wrap: 'border-mint/20 bg-mint/5',   head: 'text-mint',  dot: 'bg-mint' },
+    coral: { wrap: 'border-coral/20 bg-coral/5', head: 'text-coral', dot: 'bg-coral' },
+    azure: { wrap: 'border-azure/20 bg-azure/5', head: 'text-azure', dot: 'bg-azure' },
+    gold:  { wrap: 'border-gold/20 bg-gold/5',   head: 'text-gold',  dot: 'bg-gold' },
+  }
+  const s = styles[color]
+
   return (
-    <div className={`rounded-xl border p-5 ${bgMap[color]}`}>
-      <h3 className={`font-semibold text-base mb-3 flex items-center gap-2 ${titleMap[color]}`}>
-        <span>{icon}</span>
-        {title}
+    <div className={`rounded-xl border p-5 ${s.wrap}`}>
+      <h3 className={`font-semibold text-sm mb-3 flex items-center gap-2 ${s.head}`}>
+        <span>{icon}</span>{title}
       </h3>
       <ul className="space-y-2">
         {items.map((item, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-            <span className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${dotMap[color]}`} />
+          <li key={i} className="flex items-start gap-2 text-sm text-ink-2">
+            <span className={`mt-2 w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} />
             {item}
           </li>
         ))}
@@ -54,113 +40,78 @@ function InsightSection({
   )
 }
 
-function Spinner() {
-  return (
-    <div className="flex justify-center items-center py-20">
-      <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
-    </div>
-  )
-}
+function InsightsContent() {
+  const sse = useSSE<Insights>()
+  const insights = sse.data
 
-export default function InsightsPage() {
-  const [insights, setInsights] = useState<Insights | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  async function handleFetch() {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await getInsights()
-      setInsights(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load insights.')
-    } finally {
-      setLoading(false)
-    }
+  function handleFetch() {
+    sse.start('/api/proxy/api/insights/stream')
   }
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Business Insights</h1>
-      <p className="text-gray-500 mb-6">
-        Get an AI-powered analysis of your entire product catalog — top brands, weak spots, gaps, and pricing strategy.
-      </p>
+      <div className="mb-8 animate-fade-up">
+        <h1 className="font-heading text-3xl font-bold text-ink mb-1">Business Insights</h1>
+        <p className="text-ink-2 text-sm">AI-powered analysis of your entire product catalog.</p>
+      </div>
 
-      {!insights && !loading && (
-        <div className="bg-white rounded-xl border border-gray-200 p-10 text-center">
-          <p className="text-5xl mb-4">📊</p>
-          <p className="text-lg font-medium text-gray-700 mb-2">Ready to analyze your catalog?</p>
-          <p className="text-sm text-gray-500 mb-6 max-w-md mx-auto">
-            Click the button below to generate AI-powered insights across your entire product catalog.
-            This may take a moment.
+      {!insights && !sse.loading && (
+        <div className="animate-fade-up-1 bg-card rounded-xl border border-white/[0.07] p-12 text-center">
+          <div className="text-5xl mb-4 opacity-20">◉</div>
+          <p className="font-heading text-lg font-semibold text-ink mb-2">Ready to analyze?</p>
+          <p className="text-sm text-ink-2 mb-6 max-w-sm mx-auto leading-relaxed">
+            Generate AI-powered insights across your entire catalog — top brands, weak spots, gaps, and pricing strategy.
           </p>
           <button
             onClick={handleFetch}
-            disabled={loading}
-            className="bg-emerald-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+            className="bg-mint text-canvas px-8 py-2.5 rounded-lg text-sm font-bold hover:bg-mint-dim transition-all"
           >
             Generate Insights
           </button>
         </div>
       )}
 
-      {loading && <Spinner />}
+      {sse.loading && <SSELoader message={sse.progress} />}
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
-          {error}
-          <button
-            onClick={handleFetch}
-            className="ml-3 underline hover:no-underline"
-          >
+      {sse.error && (
+        <div className="rounded-xl border border-coral/20 bg-coral/5 px-4 py-3 text-sm text-coral flex items-center gap-3">
+          <span>{sse.error}</span>
+          <button onClick={handleFetch} className="ml-auto text-xs underline hover:no-underline shrink-0">
             Retry
           </button>
         </div>
       )}
 
-      {insights && !loading && (
+      {insights && !sse.loading && (
         <div>
-          <div className="flex items-center justify-between mb-5">
-            <p className="text-sm text-gray-400">
-              Generated at: {new Date(insights.generated_at).toLocaleString()}
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-xs text-ink-3 font-semibold uppercase tracking-widest">
+              Generated {new Date(insights.generated_at).toLocaleString()}
             </p>
             <button
               onClick={handleFetch}
-              className="text-sm text-indigo-600 hover:text-indigo-700 font-medium underline"
+              className="text-xs text-mint hover:text-mint-dim font-semibold transition-colors"
             >
-              Regenerate
+              Regenerate →
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InsightSection
-              title="Top Performing Brands"
-              icon="🌟"
-              items={insights.top_performing_brands}
-              color="emerald"
-            />
-            <InsightSection
-              title="Underperforming Products"
-              icon="⚠️"
-              items={insights.underperforming_products}
-              color="red"
-            />
-            <InsightSection
-              title="Category Gaps"
-              icon="🔎"
-              items={insights.category_gaps}
-              color="blue"
-            />
-            <InsightSection
-              title="Pricing Recommendations"
-              icon="💡"
-              items={insights.pricing_recommendations}
-              color="amber"
-            />
+            <InsightSection title="Top Performing Brands"    icon="🌟" items={insights.top_performing_brands}    color="mint"  />
+            <InsightSection title="Underperforming Products" icon="⚠️" items={insights.underperforming_products} color="coral" />
+            <InsightSection title="Category Gaps"            icon="🔎" items={insights.category_gaps}            color="azure" />
+            <InsightSection title="Pricing Recommendations"  icon="💡" items={insights.pricing_recommendations}  color="gold"  />
           </div>
         </div>
       )}
     </div>
+  )
+}
+
+export default function InsightsPage() {
+  return (
+    <AuthGuard>
+      <InsightsContent />
+    </AuthGuard>
   )
 }

@@ -1,91 +1,115 @@
+'use client'
+
 import Link from 'next/link'
+import { useAuth } from '@/lib/auth-context'
 
 const features = [
   {
     title: 'Smart Search',
     description:
-      'Search products using natural language. Ask for "comfortable running shoes for women" or "blue jeans under $50" and get AI-matched results.',
+      'Search products using natural language. Ask for "comfortable running shoes for women" and get AI-matched results.',
     href: '/search',
-    icon: '🔍',
+    icon: '⌕',
     cta: 'Search Products',
-    color: 'indigo',
   },
   {
     title: 'Product Ranking',
     description:
-      'See AI-powered product rankings filtered by gender and category. Understand which products score highest and why.',
+      'AI-powered product rankings filtered by category, with detailed score explanations.',
     href: '/ranking',
-    icon: '🏆',
+    icon: '◈',
     cta: 'View Rankings',
-    color: 'amber',
   },
   {
     title: 'Business Insights',
     description:
-      'Get a high-level analysis of your entire catalog: top brands, underperforming products, category gaps, and pricing tips.',
+      'Catalog-wide AI analysis: top brands, underperforming products, category gaps, and pricing tips.',
     href: '/insights',
-    icon: '📊',
+    icon: '◉',
     cta: 'View Insights',
-    color: 'emerald',
   },
 ]
 
-const colorMap: Record<string, string> = {
-  indigo: 'bg-indigo-50 border-indigo-200 hover:border-indigo-400',
-  amber: 'bg-amber-50 border-amber-200 hover:border-amber-400',
-  emerald: 'bg-emerald-50 border-emerald-200 hover:border-emerald-400',
-}
-
-const btnColorMap: Record<string, string> = {
-  indigo: 'bg-indigo-600 hover:bg-indigo-700',
-  amber: 'bg-amber-500 hover:bg-amber-600',
-  emerald: 'bg-emerald-600 hover:bg-emerald-700',
-}
-
-const iconBgMap: Record<string, string> = {
-  indigo: 'bg-indigo-100',
-  amber: 'bg-amber-100',
-  emerald: 'bg-emerald-100',
-}
-
 export default function Home() {
+  const { user } = useAuth()
+
   return (
     <div>
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold text-gray-900 mb-3">Product Catalog AI Analysis</h1>
-        <p className="text-lg text-gray-500 max-w-2xl">
-          Leverage AI to search, rank, and analyze your product catalog. Get actionable insights
-          from customer reviews and sales data — all in one place.
+      <div className="mb-12 animate-fade-up">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-mint/20 bg-mint/5 mb-5">
+          <span className="w-1.5 h-1.5 rounded-full bg-mint animate-pulse" />
+          <span className="text-xs font-semibold text-mint tracking-widest uppercase">AI-Powered Analytics</span>
+        </div>
+        <h1 className="font-heading text-5xl font-bold text-ink mb-4 leading-tight tracking-tight">
+          Product Catalog<br />
+          <span className="text-mint">Intelligence</span>
+        </h1>
+        <p className="text-lg text-ink-2 max-w-xl leading-relaxed">
+          Leverage AI to search, rank, and analyze your product catalog.
+          Actionable insights from customer reviews — all in one place.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {features.map((f) => (
+      {!user && (
+        <div className="mb-8 animate-fade-up-1 p-5 rounded-xl border border-mint/20 bg-mint/5 flex items-center justify-between gap-4">
+          <div>
+            <p className="font-semibold text-ink mb-0.5">Sign in to get started</p>
+            <p className="text-sm text-ink-2">Access Search, Ranking, and Insights with a free account.</p>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <Link
+              href="/login"
+              className="px-4 py-2 rounded-lg text-sm font-medium text-ink-2 border border-white/[0.08] hover:border-white/[0.16] hover:text-ink transition-all"
+            >
+              Login
+            </Link>
+            <Link
+              href="/register"
+              className="px-4 py-2 rounded-lg text-sm font-semibold bg-mint text-canvas hover:bg-mint-dim transition-colors"
+            >
+              Register
+            </Link>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+        {features.map((f, i) => (
           <div
             key={f.href}
-            className={`rounded-xl border-2 p-6 flex flex-col transition-all ${colorMap[f.color]}`}
+            className={`animate-fade-up-${i + 1} group rounded-xl border border-white/[0.07] bg-card p-6 flex flex-col hover:border-white/[0.14] hover:-translate-y-0.5 transition-all`}
           >
-            <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-2xl mb-4 ${iconBgMap[f.color]}`}>
-              {f.icon}
-            </div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">{f.title}</h2>
-            <p className="text-gray-600 text-sm flex-1 mb-5">{f.description}</p>
+            <div className="text-3xl mb-4 opacity-50 text-mint">{f.icon}</div>
+            <h2 className="font-heading text-lg font-semibold text-ink mb-2">{f.title}</h2>
+            <p className="text-sm text-ink-2 flex-1 mb-5 leading-relaxed">{f.description}</p>
             <Link
               href={f.href}
-              className={`inline-block text-center text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors ${btnColorMap[f.color]}`}
+              className="self-start text-sm font-semibold text-mint hover:text-mint-dim transition-colors flex items-center gap-1.5 group-hover:gap-2.5"
             >
-              {f.cta}
+              {f.cta} <span className="transition-all">→</span>
             </Link>
           </div>
         ))}
       </div>
 
-      <div className="mt-10 bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">How it works</h3>
-        <ol className="list-decimal list-inside space-y-2 text-sm text-gray-600">
-          <li>Use <strong>Smart Search</strong> to find products by natural language query — click any result to see its full AI summary.</li>
-          <li>Use <strong>Product Ranking</strong> to filter by gender and category and see which products rank highest with AI scoring.</li>
-          <li>Use <strong>Business Insights</strong> for a catalog-wide AI analysis covering brand performance, gaps, and pricing strategy.</li>
+      <div className="animate-fade-up-4 rounded-xl border border-white/[0.07] bg-card p-6">
+        <h3 className="font-heading text-sm font-semibold text-ink-2 uppercase tracking-widest mb-4">How it works</h3>
+        <ol className="space-y-3">
+          {[
+            ['Smart Search', 'Find products by natural language query — click any result to see its full AI summary.'],
+            ['Product Ranking', 'Filter by category to see AI-scored rankings with detailed reasoning.'],
+            ['Business Insights', 'Get catalog-wide AI analysis covering brand performance, gaps, and pricing strategy.'],
+          ].map(([title, desc], i) => (
+            <li key={i} className="flex items-start gap-3 text-sm">
+              <span className="mt-0.5 w-5 h-5 rounded-full bg-mint/10 border border-mint/20 flex items-center justify-center text-xs font-bold text-mint shrink-0">
+                {i + 1}
+              </span>
+              <span className="text-ink-2 leading-relaxed">
+                <strong className="text-ink font-semibold">{title}: </strong>
+                {desc}
+              </span>
+            </li>
+          ))}
         </ol>
       </div>
     </div>

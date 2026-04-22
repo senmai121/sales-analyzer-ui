@@ -1,26 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;1,6..12,400&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Nunito Sans', system-ui, sans-serif;
+  --font-heading: 'Sora', system-ui, sans-serif;
+  --color-canvas: #07090e;
+  --color-card: #0b1220;
+  --color-card-bright: #0f1a2e;
+  --color-mint: #6ee7b7;
+  --color-mint-dim: #34d399;
+  --color-azure: #7dd3fc;
+  --color-gold: #fcd34d;
+  --color-coral: #fca5a5;
+  --color-ink: #f0fdf4;
+  --color-ink-2: #94a3b8;
+  --color-ink-3: #4b5769;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(110, 231, 183, 0.12) transparent;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+*::-webkit-scrollbar { width: 5px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: rgba(110, 231, 183, 0.12); border-radius: 99px; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #07090e;
+  color: #f0fdf4;
+  font-family: 'Nunito Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@layer utilities {
+  .animate-fade-up   { animation: fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-fade-up-1 { animation: fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both; }
+  .animate-fade-up-2 { animation: fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both; }
+  .animate-fade-up-3 { animation: fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both; }
+  .animate-fade-up-4 { animation: fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both; }
+  .font-heading { font-family: 'Sora', system-ui, sans-serif; }
 }

@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
+export const runtime = 'edge'
+
 const API_URL = process.env.API_URL || 'http://localhost:8080'
 
 async function proxyRequest(request: NextRequest, params: Promise<{ path: string[] }>) {

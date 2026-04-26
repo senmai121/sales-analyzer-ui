@@ -51,3 +51,44 @@ export interface SimilarProduct {
   unit_price: number
   product_details: ProductDetails
 }
+
+export interface POSLocation {
+  id: number
+  name: string
+  address: string
+}
+
+export interface POSStats {
+  today_revenue: number
+  today_orders: number
+  avg_order_value: number
+  pending_orders: number
+  low_stock_count: number
+}
+
+export interface RevenueDataPoint {
+  date: string
+  revenue: number
+  orders: number
+}
+
+export interface TopProduct {
+  product_id: number
+  product_name: string
+  total_qty: number
+  total_revenue: number
+}
+
+export interface PaymentMethodStat {
+  method: string
+  total: number
+  count: number
+}
+
+export interface InventoryItem {
+  product_id: number
+  product_name: string
+  size: string
+  quantity: number
+  store_name: string
+}

@@ -3,17 +3,21 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
-
-const navLinks = [
-  { href: '/search', label: 'Search' },
-  { href: '/ranking', label: 'Ranking' },
-  { href: '/insights', label: 'Insights' },
-]
+import { useLang } from '@/lib/lang-context'
 
 export default function NavBar() {
   const { user, logout } = useAuth()
+  const { t, lang, toggle } = useLang()
   const router = useRouter()
   const pathname = usePathname()
+
+  const navLinks = [
+    { href: '/pos', label: t.nav.pos },
+    { href: '/pos/dashboard', label: t.nav.dashboard },
+    { href: '/search', label: t.nav.search },
+    { href: '/ranking', label: t.nav.ranking },
+    { href: '/insights', label: t.nav.insights },
+  ]
 
   async function handleLogout() {
     await logout()
@@ -24,7 +28,7 @@ export default function NavBar() {
     <nav className="sticky top-0 z-50 border-b border-white/[0.06] backdrop-blur-md bg-canvas/80">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
         <Link href="/" className="font-heading text-base font-semibold text-mint tracking-tight shrink-0">
-          SalesAnalyzer
+          {t.brand}
         </Link>
 
         <div className="flex items-center gap-0.5">
@@ -46,7 +50,15 @@ export default function NavBar() {
           })}
         </div>
 
-        <div className="ml-auto flex items-center gap-3 text-sm">
+        <div className="ml-auto flex items-center gap-2 text-sm">
+          {/* Language toggle */}
+          <button
+            onClick={toggle}
+            className="px-2.5 py-1 rounded-md text-xs font-bold border border-white/[0.08] text-ink-3 hover:text-ink hover:border-white/[0.16] transition-all"
+          >
+            {lang === 'en' ? 'TH' : 'EN'}
+          </button>
+
           {user ? (
             <>
               <span className="text-ink-2 text-sm">
@@ -56,7 +68,7 @@ export default function NavBar() {
                 onClick={handleLogout}
                 className="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-2 border border-white/[0.08] hover:border-coral/30 hover:text-coral transition-all"
               >
-                Logout
+                {t.nav.logout}
               </button>
             </>
           ) : (
@@ -65,13 +77,13 @@ export default function NavBar() {
                 href="/login"
                 className="px-3 py-1.5 text-sm font-medium text-ink-2 hover:text-ink transition-colors"
               >
-                Login
+                {t.nav.login}
               </Link>
               <Link
                 href="/register"
                 className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-mint text-canvas hover:bg-mint-dim transition-colors"
               >
-                Register
+                {t.nav.register}
               </Link>
             </>
           )}

@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/lib/auth-context'
+import { LangProvider } from '@/lib/lang-context'
 import NavBar from '@/components/NavBar'
 
 export const metadata: Metadata = {
-  title: 'SalesAnalyzer',
-  description: 'AI-powered product catalog analysis',
+  title: 'Smart POS',
+  description: 'Point of Sale with AI-powered analytics',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -23,12 +24,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           />
         </div>
-        <AuthProvider>
-          <NavBar />
-          <main className="relative z-10 max-w-6xl mx-auto px-4 py-8">
-            {children}
-          </main>
-        </AuthProvider>
+        <LangProvider>
+          <AuthProvider>
+            <NavBar />
+            <main className="relative z-10 max-w-6xl mx-auto px-4 py-8">
+              {children}
+            </main>
+          </AuthProvider>
+        </LangProvider>
       </body>
     </html>
   )

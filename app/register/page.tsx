@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
+import { useLang } from '@/lib/lang-context'
 
 const inputClass =
   'w-full bg-canvas border border-white/[0.08] rounded-lg px-4 py-2.5 text-sm text-ink placeholder:text-ink-3 focus:outline-none focus:border-mint/40 focus:ring-1 focus:ring-mint/10 transition-all'
@@ -11,6 +12,8 @@ const labelClass = 'block text-xs font-semibold text-ink-2 uppercase tracking-wi
 
 export default function RegisterPage() {
   const { login } = useAuth()
+  const { t } = useLang()
+  const r = t.register
   const router = useRouter()
 
   const [username, setUsername] = useState('')
@@ -23,7 +26,7 @@ export default function RegisterPage() {
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     if (password !== confirmPassword) {
-      setError('Passwords do not match.')
+      setError(r.passwordMismatch)
       return
     }
     setError(null)
@@ -38,14 +41,14 @@ export default function RegisterPage() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        throw new Error(data.error ?? data.message ?? 'Registration failed. Please try again.')
+        throw new Error(data.error ?? data.message ?? r.errorDefault)
       }
 
       const data = await res.json()
       login(data.user)
       router.push('/')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed. Please try again.')
+      setError(err instanceof Error ? err.message : r.errorDefault)
     } finally {
       setLoading(false)
     }
@@ -55,15 +58,15 @@ export default function RegisterPage() {
     <div className="min-h-[80vh] flex items-center justify-center">
       <div className="w-full max-w-sm animate-fade-up">
         <div className="text-center mb-8">
-          <div className="font-heading text-2xl font-bold text-mint mb-2">SalesAnalyzer</div>
-          <h1 className="text-xl font-semibold text-ink">Create an account</h1>
-          <p className="text-sm text-ink-2 mt-1">Get started for free today</p>
+          <div className="font-heading text-2xl font-bold text-mint mb-2">{t.brand}</div>
+          <h1 className="text-xl font-semibold text-ink">{r.title}</h1>
+          <p className="text-sm text-ink-2 mt-1">{r.subtitle}</p>
         </div>
 
         <div className="rounded-2xl border border-white/[0.08] bg-card p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className={labelClass} htmlFor="username">Username</label>
+              <label className={labelClass} htmlFor="username">{r.username}</label>
               <input
                 id="username" type="text" required value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -71,7 +74,7 @@ export default function RegisterPage() {
               />
             </div>
             <div>
-              <label className={labelClass} htmlFor="email">Email</label>
+              <label className={labelClass} htmlFor="email">{r.email}</label>
               <input
                 id="email" type="email" required value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -79,7 +82,7 @@ export default function RegisterPage() {
               />
             </div>
             <div>
-              <label className={labelClass} htmlFor="password">Password</label>
+              <label className={labelClass} htmlFor="password">{r.password}</label>
               <input
                 id="password" type="password" required value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -87,7 +90,7 @@ export default function RegisterPage() {
               />
             </div>
             <div>
-              <label className={labelClass} htmlFor="confirmPassword">Confirm Password</label>
+              <label className={labelClass} htmlFor="confirmPassword">{r.confirmPassword}</label>
               <input
                 id="confirmPassword" type="password" required value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -106,15 +109,15 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full py-2.5 rounded-lg text-sm font-bold bg-mint text-canvas hover:bg-mint-dim disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
-              {loading ? 'Creating account…' : 'Create Account'}
+              {loading ? r.loading : r.submit}
             </button>
           </form>
         </div>
 
         <p className="text-center text-sm text-ink-2 mt-5">
-          Already have an account?{' '}
+          {r.hasAccount}{' '}
           <Link href="/login" className="text-mint hover:text-mint-dim font-semibold transition-colors">
-            Sign in
+            {r.signIn}
           </Link>
         </p>
       </div>

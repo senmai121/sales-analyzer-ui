@@ -6,10 +6,11 @@ import { Product } from '@/lib/types'
 import AuthGuard from '@/components/AuthGuard'
 import { useSSE } from '@/lib/useSSE'
 import { SSELoader } from '@/components/SSELoader'
+import { useLang } from '@/lib/lang-context'
 
-function StarRating({ reviews }: { reviews: { rating: number }[] }) {
+function StarRating({ reviews, noReviews }: { reviews: { rating: number }[]; noReviews: string }) {
   if (!reviews || reviews.length === 0)
-    return <span className="text-ink-3 text-xs">No reviews</span>
+    return <span className="text-ink-3 text-xs">{noReviews}</span>
   const rawAvg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
   const avg = Math.min(5, Math.max(0, rawAvg / 2))
   const full = Math.round(avg)
@@ -22,7 +23,7 @@ function StarRating({ reviews }: { reviews: { rating: number }[] }) {
   )
 }
 
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({ product, viewSummary, noReviews }: { product: Product; viewSummary: string; noReviews: string }) {
   const { product_id, product_name, unit_price, product_details } = product
   return (
     <Link
@@ -48,15 +49,17 @@ function ProductCard({ product }: { product: Product }) {
       {product_details.description && (
         <p className="text-ink-2 text-xs mb-3 line-clamp-2 leading-relaxed">{product_details.description}</p>
       )}
-      <StarRating reviews={product_details.reviews} />
+      <StarRating reviews={product_details.reviews} noReviews={noReviews} />
       <p className="text-azure text-xs mt-2.5 font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-        View AI Summary →
+        {viewSummary}
       </p>
     </Link>
   )
 }
 
 function SearchContent() {
+  const { t } = useLang()
+  const s = t.search
   const [query, setQuery] = useState('')
   const [searched, setSearched] = useState(false)
   const sse = useSSE<Product[]>()
@@ -71,8 +74,8 @@ function SearchContent() {
   return (
     <div>
       <div className="mb-8 animate-fade-up">
-        <h1 className="font-heading text-3xl font-bold text-ink mb-1">Smart Search</h1>
-        <p className="text-ink-2 text-sm">Natural language search across your entire product catalog.</p>
+        <h1 className="font-heading text-3xl font-bold text-ink mb-1">{s.title}</h1>
+        <p className="text-ink-2 text-sm">{s.subtitle}</p>
       </div>
 
       <form onSubmit={handleSearch} className="flex gap-3 mb-8 animate-fade-up-1">
@@ -80,7 +83,7 @@ function SearchContent() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder='Try "blue jeans for women" or "warm winter coat"'
+          placeholder={s.placeholder}
           className="flex-1 bg-card border border-white/[0.08] rounded-xl px-5 py-3 text-sm text-ink placeholder:text-ink-3 focus:outline-none focus:border-mint/30 focus:ring-1 focus:ring-mint/10 transition-all"
         />
         <button
@@ -88,7 +91,7 @@ function SearchContent() {
           disabled={sse.loading || !query.trim()}
           className="bg-mint text-canvas px-6 py-3 rounded-xl text-sm font-bold hover:bg-mint-dim disabled:opacity-40 disabled:cursor-not-allowed transition-all shrink-0"
         >
-          {sse.loading ? 'Searching…' : 'Search'}
+          {sse.loading ? s.loading : s.submit}
         </button>
       </form>
 
@@ -103,19 +106,24 @@ function SearchContent() {
       {!sse.loading && searched && !sse.error && (!sse.data || sse.data.length === 0) && (
         <div className="text-center py-20">
           <p className="text-5xl mb-3 opacity-20">⌕</p>
-          <p className="font-semibold text-ink-2">No products found</p>
-          <p className="text-sm text-ink-3 mt-1">Try a different search term.</p>
+          <p className="font-semibold text-ink-2">{s.noResults}</p>
+          <p className="text-sm text-ink-3 mt-1">{s.noResultsSub}</p>
         </div>
       )}
 
       {!sse.loading && sse.data && sse.data.length > 0 && (
         <div>
           <p className="text-xs text-ink-3 font-semibold uppercase tracking-widest mb-4">
-            {sse.data.length} result{sse.data.length !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;
+            {s.results(sse.data.length, query)}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {sse.data.map((product) => (
-              <ProductCard key={product.product_id} product={product} />
+              <ProductCard
+                key={product.product_id}
+                product={product}
+                viewSummary={s.viewSummary}
+                noReviews={s.noReviews}
+              />
             ))}
           </div>
         </div>

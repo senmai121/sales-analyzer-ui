@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
@@ -15,6 +15,8 @@ export default function LoginPage() {
   const { t } = useLang()
   const l = t.login
   const router = useRouter()
+
+  useEffect(() => { fetch('/api/health').catch(() => {}) }, [])
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

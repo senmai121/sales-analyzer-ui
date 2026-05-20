@@ -6,6 +6,7 @@ export const translations = {
     nav: {
       pos: 'POS',
       dashboard: 'Dashboard',
+      transactions: 'Transactions',
       search: 'Search',
       ranking: 'Ranking',
       insights: 'Insights',
@@ -136,6 +137,7 @@ export const translations = {
     nav: {
       pos: 'POS',
       dashboard: 'แดชบอร์ด',
+      transactions: 'รายการซื้อขาย',
       search: 'ค้นหา',
       ranking: 'อันดับ',
       insights: 'วิเคราะห์',

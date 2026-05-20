@@ -21,6 +21,7 @@ export interface Product {
 export interface ProductSummary {
   product_id: number
   product_name: string
+  brand_name?: string
   avg_rating: number
   total_reviews: number
   summary: string
@@ -33,6 +34,7 @@ export interface RankedProduct {
   rank: number
   product_id: number
   product_name: string
+  brand_name?: string
   score: number
   reason: string
 }
@@ -75,6 +77,7 @@ export interface RevenueDataPoint {
 export interface TopProduct {
   product_id: number
   product_name: string
+  brand_name?: string
   total_qty: number
   total_revenue: number
 }
@@ -88,7 +91,48 @@ export interface PaymentMethodStat {
 export interface InventoryItem {
   product_id: number
   product_name: string
+  brand_name?: string
   size: string
   quantity: number
   store_name: string
+}
+
+export interface POSOrder {
+  id: number
+  status: string
+  total_amount: number
+  store_id: number
+  store_name: string
+  customer_name: string
+  created_at: string
+  items_count: number
+}
+
+export interface POSOrderDetailItem {
+  product_id: number
+  product_name: string
+  brand_name?: string
+  size?: string
+  quantity: number
+  unit_price: number
+  total_amount: number
+}
+
+export interface POSPaymentRecord {
+  method: string
+  amount: number
+  reference?: string
+}
+
+export interface POSOrderDetail {
+  order_id: number
+  status: string
+  store_name: string
+  customer_name: string
+  subtotal: number
+  vat_amount: number
+  total_amount: number
+  created_at: string
+  items: POSOrderDetailItem[]
+  payments: POSPaymentRecord[]
 }

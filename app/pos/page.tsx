@@ -15,6 +15,7 @@ interface Product {
   product_id: number
   sku: string
   product_name: string
+  brand_name?: string
   unit_price: number
   sizes: ProductSize[]
 }
@@ -102,6 +103,9 @@ function ProductCard({
           ฿{product.unit_price.toFixed(2)}
         </span>
       </div>
+      {product.brand_name && (
+        <p className="text-xs text-ink-3 mb-0.5">{product.brand_name}</p>
+      )}
       <p className="text-xs text-ink-3 font-mono mb-2">{product.sku}</p>
 
       <div className="flex flex-wrap gap-1.5">

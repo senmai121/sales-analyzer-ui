@@ -391,44 +391,62 @@ function DashboardContent() {
           ) : topProducts.length === 0 ? (
             <EmptyState />
           ) : (
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart
-                layout="vertical"
-                data={topProducts}
-                margin={{ top: 0, right: 20, left: 0, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
-                <XAxis
-                  type="number"
-                  tick={{ fill: '#6b7280', fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="product_name"
-                  width={120}
-                  tick={{ fill: '#9ca3af', fontSize: 10 }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(v: string) => v.length > 18 ? v.slice(0, 18) + '…' : v}
-                />
-                <Tooltip
-                  formatter={(value) => [formatInt(Number(value)), 'จำนวนขาย']}
-                  contentStyle={{
-                    background: '#1a1a2e',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 12,
-                    fontSize: 12,
-                  }}
-                />
-                <Bar dataKey="total_qty" radius={[0, 6, 6, 0]}>
-                  {topProducts.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+            <>
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart
+                  layout="vertical"
+                  data={topProducts}
+                  margin={{ top: 0, right: 20, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
+                  <XAxis
+                    type="number"
+                    tick={{ fill: '#6b7280', fontSize: 11 }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="product_name"
+                    width={120}
+                    tick={{ fill: '#9ca3af', fontSize: 10 }}
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={(v: string) => v.length > 18 ? v.slice(0, 18) + '…' : v}
+                  />
+                  <Tooltip
+                    formatter={(value) => [formatInt(Number(value)), 'จำนวนขาย']}
+                    contentStyle={{
+                      background: '#1a1a2e',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 12,
+                      fontSize: 12,
+                    }}
+                  />
+                  <Bar dataKey="total_qty" radius={[0, 6, 6, 0]}>
+                    {topProducts.map((_, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+              {topProducts.some((p) => p.brand_name) && (
+                <div className="mt-3 space-y-1 overflow-auto max-h-36">
+                  {topProducts.map((p, i) => (
+                    <div key={p.product_id} className="flex items-center gap-2 text-xs">
+                      <span
+                        className="w-2 h-2 rounded-full shrink-0"
+                        style={{ background: COLORS[i % COLORS.length] }}
+                      />
+                      <span className="text-ink font-medium truncate flex-1">{p.product_name}</span>
+                      {p.brand_name && (
+                        <span className="text-ink-3 shrink-0">{p.brand_name}</span>
+                      )}
+                    </div>
                   ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -461,6 +479,7 @@ function DashboardContent() {
                 <thead>
                   <tr className="text-ink-3 uppercase tracking-wider">
                     <th className="text-left pb-2 font-semibold">สินค้า</th>
+                    <th className="text-left pb-2 font-semibold">แบรนด์</th>
                     <th className="text-left pb-2 font-semibold">ไซส์</th>
                     <th className="text-left pb-2 font-semibold">สาขา</th>
                     <th className="text-right pb-2 font-semibold">คงเหลือ</th>
@@ -472,6 +491,7 @@ function DashboardContent() {
                       <td className="py-2 pr-2 text-ink font-medium max-w-[120px] truncate">
                         {item.product_name}
                       </td>
+                      <td className="py-2 pr-2 text-ink-3">{item.brand_name ?? '—'}</td>
                       <td className="py-2 pr-2 text-ink-2">{item.size}</td>
                       <td className="py-2 pr-2 text-ink-3 text-xs">{item.store_name}</td>
                       <td className="py-2 text-right">

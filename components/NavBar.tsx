@@ -14,6 +14,7 @@ export default function NavBar() {
   const navLinks = [
     { href: '/pos', label: t.nav.pos },
     { href: '/pos/dashboard', label: t.nav.dashboard },
+    { href: '/pos/transactions', label: t.nav.transactions },
     { href: '/search', label: t.nav.search },
     { href: '/ranking', label: t.nav.ranking },
     { href: '/insights', label: t.nav.insights },

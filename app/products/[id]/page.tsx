@@ -22,7 +22,7 @@ function SentimentBadge({ sentiment }: { sentiment: ProductSummary['sentiment'] 
 }
 
 function StarDisplay({ rating }: { rating: number }) {
-  const full = Math.round(rating)
+  const full = Math.min(5, Math.max(0, Math.round(rating)))
   return (
     <span className="font-medium">
       <span className="text-gold">{'★'.repeat(full)}</span>
@@ -75,7 +75,12 @@ function ProductDetailContent({ id }: { id: string }) {
         <>
           <div className="animate-fade-up bg-card rounded-xl border border-white/[0.07] p-6">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-              <h1 className="font-heading text-2xl font-bold text-ink">{summary.product_name}</h1>
+              <div>
+                <h1 className="font-heading text-2xl font-bold text-ink">{summary.product_name}</h1>
+                {summary.brand_name && (
+                  <p className="text-xs text-ink-3 mt-0.5">{summary.brand_name}</p>
+                )}
+              </div>
               <SentimentBadge sentiment={summary.sentiment} />
             </div>
             <div className="flex flex-wrap items-center gap-3 text-sm text-ink-2 mb-5">
